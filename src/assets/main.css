@@ -29,13 +29,13 @@ h2 {
 }
 
 .green {
-  background-color: #449d44;
+  background-color: #449d44 !important;
 }
 
 .red {
-  background-color: #d9534f;
+  background-color: #d9534f !important;
 }
 
 .black {
-  background-color: black;
+  background-color: black !important;
 }
