@@ -1,34 +1,12 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { API_URL } from '../common/constants'
+import { defineComponent, type PropType } from 'vue'
 import { type GameBoardTypes } from '../common/types'
 
 export default defineComponent({
-    data() {
-        return {
-            rouletteNumbers: [] as GameBoardTypes[],
-        };
-    },
-    mounted() {
-        fetch(API_URL + "/1/configuration")
-            .then((result) => result.json())
-            .then((data) => {
-
-                const positionToId = data.positionToId;
-
-                for (let i = 0; i < positionToId.length; i++) {
-                    this.rouletteNumbers.push({
-                        results: data.results[positionToId[i]],
-                        colors: data.colors[positionToId[i]],
-                    });
-                }
-            })
-            .catch((err) => {
-                console.error("Error", err);
-            });
-    },
+    props: {
+        rouletteNumbers: Object as PropType<GameBoardTypes[]>,
+    }
 });
-
 </script>
 
 <template>

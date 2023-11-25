@@ -4,6 +4,7 @@ export interface GameBoardTypes {
 }
 
 export interface StatisticsTypes {
-  result: number;
+  result: string;
   count: number;
+  color: string;
 }
