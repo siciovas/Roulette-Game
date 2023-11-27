@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import { API_URL } from '../common/constants'
 import type { GameBoardTypes, StatisticsTypes } from '../common/types'
 import GameBoard from './GameBoard.vue';
@@ -10,35 +10,39 @@ export default defineComponent({
         GameBoard,
         Statistics,
     },
-    data() {
+    setup() {
+        const rouletteNumbers = ref<GameBoardTypes[]>([]);
+        const statistics = ref<StatisticsTypes[]>([]);
+
+        onMounted(async () => {
+            const configResponse = await fetch(API_URL + `/1/configuration`);
+            const config = await configResponse.json();
+
+            const positionToId = config.positionToId;
+
+            for (let i = 0; i < positionToId.length; i++) {
+                rouletteNumbers.value.push({
+                    results: config.results[positionToId[i]],
+                    colors: config.colors[positionToId[i]],
+                });
+            }
+
+            const statsResponse = await fetch(API_URL + `/1/stats?limit=200`);
+            const stats = await statsResponse.json();
+
+            for (let i = 0; i < stats.length; i++) {
+                statistics.value.push({
+                    result: config.results[config.results.indexOf(stats[i].result.toString() === '37' ? '00' : stats[i].result.toString())],
+                    count: stats[i].count,
+                    color: config.colors[config.results.indexOf(stats[i].result.toString() === '37' ? '00' : stats[i].result.toString())],
+                });
+            }
+        });
+
         return {
-            rouletteNumbers: [] as GameBoardTypes[],
-            statistics: [] as StatisticsTypes[],
+            rouletteNumbers,
+            statistics,
         };
-    },
-    async mounted() {
-        const config = await fetch(API_URL + "/2/configuration")
-        const configResult = await config.json()
-
-        const positionToId = configResult.positionToId;
-
-        for (let i = 0; i < positionToId.length; i++) {
-            this.rouletteNumbers.push({
-                results: configResult.results[positionToId[i]],
-                colors: configResult.colors[positionToId[i]],
-            });
-        }
-
-        const stats = await fetch(API_URL + "/2/stats?limit=200")
-        const statsResult = await stats.json()
-
-        for (let i = 0; i < statsResult.length; i++) {
-            this.statistics.push({
-                result: configResult.results[configResult.results.indexOf(statsResult[i].result.toString() === "37" ? "00" : statsResult[i].result.toString())],
-                count: statsResult[i].count,
-                color: configResult.colors[configResult.results.indexOf(statsResult[i].result.toString() === "37" ? "00" : statsResult[i].result.toString())]
-            });
-        }
     },
 });
 
