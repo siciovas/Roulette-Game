@@ -16,11 +16,11 @@ export default defineComponent({
         };
 
         onMounted(() => {
-            countDown.value = props.nextGame?.fakeStartDelta || 0;
+            countDown.value = props.nextGame?.fakeStartDelta as number;
         });
 
         watchEffect(() => {
-            countDown.value = props.nextGame?.fakeStartDelta || 0;
+            countDown.value = props.nextGame?.fakeStartDelta as number;
 
             const intervalId = setInterval(() => {
                 startCountDown();
