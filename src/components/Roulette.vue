@@ -1,14 +1,16 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
 import { API_URL } from '../common/constants'
-import type { GameBoardTypes, StatisticsTypes } from '../common/types'
+import type { GameBoardTypes, StatisticsTypes, LogsTypes } from '../common/types'
 import GameBoard from './GameBoard.vue';
 import Statistics from './Statistics.vue';
+import Logs from './Logs.vue'
 
 export default defineComponent({
     components: {
         GameBoard,
         Statistics,
+        Logs,
     },
     setup() {
         const rouletteNumbers = ref<GameBoardTypes[]>([]);
@@ -37,6 +39,12 @@ export default defineComponent({
                     color: config.colors[config.results.indexOf(stats[i].result.toString() === '37' ? '00' : stats[i].result.toString())],
                 });
             }
+
+        const nextGameResponse = await fetch(API_URL + `/1/nextGame`)
+        const nextGame = await nextGameResponse.json()
+
+        this.nextGame = nextGame
+
         });
 
         return {
@@ -57,15 +65,6 @@ export default defineComponent({
         </div>
         <Statistics v-if="statistics.length > 0" :statistics="statistics" />
         <GameBoard :rouletteNumbers="rouletteNumbers" />
-        <div class="row">
-            <div class="col">
-                <h4>Results and Spin Timer:</h4>
-                <div class="logs"></div>
-            </div>
-            <div class="col">
-                <h4>Actions Log:</h4>
-                <div class="logs"></div>
-            </div>
-        </div>
+        <Logs />
     </div>
 </template>
