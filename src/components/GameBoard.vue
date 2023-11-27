@@ -4,7 +4,14 @@ import { type GameBoardTypes } from '../common/types'
 
 export default defineComponent({
     props: {
-        rouletteNumbers: Object as PropType<GameBoardTypes[]>,
+        rouletteNumbers: {
+            type: Array as PropType<GameBoardTypes[]>,
+        }
+    },
+    setup(props) {
+        return {
+            rouletteNumbers: props.rouletteNumbers,
+        }
     }
 });
 </script>
