@@ -1,15 +1,20 @@
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
+import { defineComponent, ref, type PropType } from 'vue';
 import type { StatisticsTypes } from '@/common/types';
 
 export default defineComponent({
-    data() {
-        return {
-            neutralColSpan: this.statistics?.length as number - 10
+    props: {
+        statistics: {
+            type: Array as PropType<StatisticsTypes[]>,
         }
     },
-    props: {
-        statistics: Object as PropType<StatisticsTypes[]>,
+    setup(props) {
+        const neutralColSpan = ref(props.statistics?.length as number - 10);
+
+        return {
+            neutralColSpan,
+        };
+
     }
 });
 </script>

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import { API_URL } from '../common/constants'
 import type { GameBoardTypes, StatisticsTypes, LogsTypes } from '../common/types'
 import GameBoard from './GameBoard.vue';
@@ -12,43 +12,45 @@ export default defineComponent({
         Statistics,
         Logs,
     },
-    data() {
-        return {
-            rouletteNumbers: [] as GameBoardTypes[],
-            statistics: [] as StatisticsTypes[],
-            nextGame: {} as LogsTypes | undefined,
-            finishedGame: {} as LogsTypes,
-        };
-    },
-    async mounted() {
-        const config = await fetch(API_URL + "/2/configuration")
-        const configResult = await config.json()
+    setup() {
+        const rouletteNumbers = ref<GameBoardTypes[]>([]);
+        const statistics = ref<StatisticsTypes[]>([]);
 
-        const positionToId = configResult.positionToId;
+        onMounted(async () => {
+            const configResponse = await fetch(API_URL + `/1/configuration`);
+            const config = await configResponse.json();
 
-        for (let i = 0; i < positionToId.length; i++) {
-            this.rouletteNumbers.push({
-                results: configResult.results[positionToId[i]],
-                colors: configResult.colors[positionToId[i]],
-            });
-        }
+            const positionToId = config.positionToId;
 
-        const stats = await fetch(API_URL + "/2/stats?limit=200")
-        const statsResult = await stats.json()
+            for (let i = 0; i < positionToId.length; i++) {
+                rouletteNumbers.value.push({
+                    results: config.results[positionToId[i]],
+                    colors: config.colors[positionToId[i]],
+                });
+            }
 
-        for (let i = 0; i < statsResult.length; i++) {
-            this.statistics.push({
-                result: configResult.results[configResult.results.indexOf(statsResult[i].result.toString() === "37" ? "00" : statsResult[i].result.toString())],
-                count: statsResult[i].count,
-                color: configResult.colors[configResult.results.indexOf(statsResult[i].result.toString() === "37" ? "00" : statsResult[i].result.toString())]
-            });
-        }
+            const statsResponse = await fetch(API_URL + `/1/stats?limit=200`);
+            const stats = await statsResponse.json();
+
+            for (let i = 0; i < stats.length; i++) {
+                statistics.value.push({
+                    result: config.results[config.results.indexOf(stats[i].result.toString() === '37' ? '00' : stats[i].result.toString())],
+                    count: stats[i].count,
+                    color: config.colors[config.results.indexOf(stats[i].result.toString() === '37' ? '00' : stats[i].result.toString())],
+                });
+            }
 
         const nextGameResponse = await fetch(API_URL + `/1/nextGame`)
         const nextGame = await nextGameResponse.json()
 
         this.nextGame = nextGame
-        console.log(this.nextGame)
+
+        });
+
+        return {
+            rouletteNumbers,
+            statistics,
+        };
     },
 });
 
@@ -63,6 +65,6 @@ export default defineComponent({
         </div>
         <Statistics v-if="statistics.length > 0" :statistics="statistics" />
         <GameBoard :rouletteNumbers="rouletteNumbers" />
-        <Logs :nextGame="nextGame" />
+        <Logs />
     </div>
 </template>
