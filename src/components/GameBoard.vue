@@ -1,21 +1,3 @@
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue'
-import { type GameBoardTypes } from '../common/types'
-
-export default defineComponent({
-    props: {
-        rouletteNumbers: {
-            type: Array as PropType<GameBoardTypes[]>,
-        }
-    },
-    setup(props) {
-        return {
-            rouletteNumbers: props.rouletteNumbers,
-        }
-    }
-});
-</script>
-
 <template>
     <div>
         <h4>Gameboard:</h4>
@@ -26,3 +8,27 @@ export default defineComponent({
         </div>
     </div>
 </template>
+
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue'
+import { type GameBoardTypes } from '../common/types'
+import { useStore } from 'vuex'
+
+export default defineComponent({
+    props: {
+        rouletteNumbers: {
+            type: Array as PropType<GameBoardTypes[]>,
+        }
+    },
+    setup(props) {
+        const store = useStore()
+
+        store.commit('addLog', `${new Date().toISOString()} Loading game board`)
+        store.commit('addLog', `${new Date().toISOString()} GET .../configuration`)
+        
+        return {
+            rouletteNumbers: props.rouletteNumbers,
+        }
+    }
+});
+</script>

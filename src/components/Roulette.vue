@@ -1,10 +1,24 @@
+<template>
+    <div class="container">
+        <h2>Aardvark - "Roulette Screen" game</h2>
+        <div>
+            <h4>API URL:</h4>
+            <input type="text" class="form-control" />
+        </div>
+        <Statistics v-if="statistics.length > 0" :statistics="statistics" />
+        <GameBoard :rouletteNumbers="rouletteNumbers" />
+        <Logs />
+    </div>
+</template>
+
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
 import { API_URL } from '../common/constants'
-import type { GameBoardTypes, StatisticsTypes, LogsTypes } from '../common/types'
+import type { GameBoardTypes, StatisticsTypes } from '../common/types'
 import GameBoard from './GameBoard.vue';
 import Statistics from './Statistics.vue';
 import Logs from './Logs.vue'
+import { useStore } from 'vuex'
 
 export default defineComponent({
     components: {
@@ -12,9 +26,12 @@ export default defineComponent({
         Statistics,
         Logs,
     },
+
     setup() {
         const rouletteNumbers = ref<GameBoardTypes[]>([]);
         const statistics = ref<StatisticsTypes[]>([]);
+
+        const store = useStore()
 
         onMounted(async () => {
             const configResponse = await fetch(API_URL + `/1/configuration`);
@@ -29,6 +46,8 @@ export default defineComponent({
                 });
             }
 
+            store.commit('addLog', `${new Date().toISOString()} GET .../1/stats?limit=200`)
+
             const statsResponse = await fetch(API_URL + `/1/stats?limit=200`);
             const stats = await statsResponse.json();
 
@@ -39,12 +58,6 @@ export default defineComponent({
                     color: config.colors[config.results.indexOf(stats[i].result.toString() === '37' ? '00' : stats[i].result.toString())],
                 });
             }
-
-        const nextGameResponse = await fetch(API_URL + `/1/nextGame`)
-        const nextGame = await nextGameResponse.json()
-
-        this.nextGame = nextGame
-
         });
 
         return {
@@ -53,18 +66,4 @@ export default defineComponent({
         };
     },
 });
-
 </script>
-
-<template>
-    <div class="container">
-        <h2>Aardvark - "Roulette Screen" game</h2>
-        <div>
-            <h4>API URL:</h4>
-            <input type="text" class="form-control" />
-        </div>
-        <Statistics v-if="statistics.length > 0" :statistics="statistics" />
-        <GameBoard :rouletteNumbers="rouletteNumbers" />
-        <Logs />
-    </div>
-</template>
