@@ -1,24 +1,3 @@
-<script lang="ts">
-import { defineComponent, ref, type PropType } from 'vue';
-import type { StatisticsTypes } from '@/common/types';
-
-export default defineComponent({
-    props: {
-        statistics: {
-            type: Array as PropType<StatisticsTypes[]>,
-        }
-    },
-    setup(props) {
-        const neutralColSpan = ref(props.statistics?.length as number - 10);
-
-        return {
-            neutralColSpan,
-        };
-
-    }
-});
-</script>
-
 <template>
     <div>
         <h4>Statistics (last 200 roulette spins):</h4>
@@ -58,3 +37,24 @@ export default defineComponent({
         </table>
     </div>
 </template>
+
+<script lang="ts">
+import { defineComponent, ref, type PropType } from 'vue';
+import type { StatisticsTypes } from '@/common/types';
+
+export default defineComponent({
+    props: {
+        statistics: {
+            type: Array as PropType<StatisticsTypes[]>,
+        }
+    },
+    setup(props) {
+        const neutralColSpan = ref(props.statistics?.length as number - 10);
+
+        return {
+            neutralColSpan,
+        };
+
+    }
+});
+</script>
