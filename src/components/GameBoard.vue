@@ -20,15 +20,11 @@ export default defineComponent({
             type: Array as PropType<GameBoardTypes[]>,
         }
     },
-    setup(props) {
+    setup() {
         const store = useStore()
 
         store.commit('addLog', `${new Date().toISOString()} Loading game board`)
         store.commit('addLog', `${new Date().toISOString()} GET .../configuration`)
-        
-        return {
-            rouletteNumbers: props.rouletteNumbers,
-        }
     }
 });
 </script>

@@ -26,7 +26,6 @@
 </template>
 
 <script lang="ts">
-import { API_URL } from '@/common/constants';
 import type { LogsTypes } from '@/common/types';
 import { defineComponent, ref, onMounted, watchEffect } from 'vue'
 import { useStore } from 'vuex'
@@ -52,9 +51,9 @@ export default defineComponent({
         };
 
         const getNextGame = async () => {
-            store.commit('addLog', `${new Date().toISOString()} GET .../1/nextGame`)
+            store.commit('addLog', `${new Date().toISOString()} GET .../nextGame`)
 
-            const nextGameResponse = await fetch(API_URL + `/1/nextGame`)
+            const nextGameResponse = await fetch(`${store.state.baseURL}/nextGame`)
             const nextGameDetails = await nextGameResponse.json()
 
             nextGame.value = nextGameDetails
@@ -109,7 +108,7 @@ export default defineComponent({
             if (startSpin.value === 0) {
                 store.commit('addLog', `${new Date().toISOString()} GET .../game/${resultsHistory.value[resultsHistory.value.length - 1].id}`)
 
-                const gameDetailsResponse = await fetch(API_URL + `/1/game/${resultsHistory.value[resultsHistory.value.length - 1].uuid}`);
+                const gameDetailsResponse = await fetch(`${store.state.baseURL}/game/${resultsHistory.value[resultsHistory.value.length - 1].uuid}`);
                 const gameDetails = await gameDetailsResponse.json();
 
                 nextGame.value = gameDetails
