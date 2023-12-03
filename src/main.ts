@@ -10,8 +10,9 @@ const store = createStore({
   state() {
     return {
       logs: [],
-      baseURL: '',
-      v: 0
+      baseURL: "",
+      result: null,
+      selectedNumber: null,
     };
   },
   mutations: {
@@ -19,8 +20,13 @@ const store = createStore({
       state.logs.push(payload);
     },
     setURL(state: any, url: string) {
-      console.log(url)
       state.baseURL = url;
+    },
+    spinningResult(state: any, number: number) {
+      state.result = number;
+    },
+    selectedNumber(state: any, number: number) {
+      state.selectedNumber = number;
     },
   },
 });

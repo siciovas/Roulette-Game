@@ -20,8 +20,7 @@ export default defineComponent({
 
         const onChange = (event: Event) => {
             const value = (event.target as HTMLInputElement)?.value;
-            if (value !== undefined)
-            {
+            if (value !== undefined) {
                 store.commit('setURL', value)
             }
         }
