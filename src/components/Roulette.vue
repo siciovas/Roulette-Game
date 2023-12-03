@@ -1,67 +1,93 @@
 <template>
     <div class="container">
         <h2>Aardvark - "Roulette Screen" game</h2>
-        <div>
-            <h4>API URL:</h4>
-            <input type="text" class="form-control" />
-        </div>
-        <Statistics v-if="statistics.length > 0" :statistics="statistics" />
-        <GameBoard :rouletteNumbers="rouletteNumbers" />
+        <InputAPI />
+        <Statistics :statistics="statistics" />
+        <GameBoard :gameBoard="gameBoard" />
         <Logs />
     </div>
 </template>
-
+  
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
-import { API_URL } from '../common/constants'
-import type { GameBoardTypes, StatisticsTypes } from '../common/types'
-import GameBoard from './GameBoard.vue';
-import Statistics from './Statistics.vue';
-import Logs from './Logs.vue'
-import { useStore } from 'vuex'
+import { defineComponent, ref, watchEffect } from "vue";
+import type { GameBoardTypes, StatisticsTypes } from "../common/types";
+import GameBoard from "./GameBoard.vue";
+import Statistics from "./Statistics.vue";
+import Logs from "./Logs.vue";
+import InputAPI from "./InputAPI.vue";
+import { useStore } from "vuex";
 
 export default defineComponent({
     components: {
         GameBoard,
         Statistics,
         Logs,
+        InputAPI,
     },
 
     setup() {
-        const rouletteNumbers = ref<GameBoardTypes[]>([]);
+        const gameBoard = ref<GameBoardTypes[]>([]);
         const statistics = ref<StatisticsTypes[]>([]);
 
-        const store = useStore()
+        const store = useStore();
+        const winnerNumber = ref(null);
+        const baseURL = ref("");
 
-        onMounted(async () => {
-            const configResponse = await fetch(API_URL + `/1/configuration`);
+        store.commit("addLog", `${new Date().toISOString()} Loading game board`);
+
+        watchEffect(async () => {
+            winnerNumber.value = store.state.result;
+            baseURL.value = store.state.baseURL;
+            if (winnerNumber.value !== null || baseURL.value !== "") {
+                await getConfiguration();
+                await getStatistics();
+            }
+        });
+
+        async function getConfiguration() {
+            store.commit("addLog", `${new Date().toISOString()} GET .../configuration`);
+
+            const configResponse = await fetch(`${store.state.baseURL}/configuration`);
+
+            if (configResponse.status !== 200) {
+                store.commit("addLog", `${new Date().toISOString()} Impossible to retrieve the game data, please check input API`);
+            }
+
             const config = await configResponse.json();
 
             const positionToId = config.positionToId;
 
+            if (config) {
+                gameBoard.value = [];
+            }
+
             for (let i = 0; i < positionToId.length; i++) {
-                rouletteNumbers.value.push({
+                gameBoard.value.push({
                     results: config.results[positionToId[i]],
                     colors: config.colors[positionToId[i]],
                 });
             }
+        }
 
-            store.commit('addLog', `${new Date().toISOString()} GET .../1/stats?limit=200`)
-
-            const statsResponse = await fetch(API_URL + `/1/stats?limit=200`);
+        async function getStatistics() {
+            const statsResponse = await fetch(`${store.state.baseURL}/stats?limit=200`);
             const stats = await statsResponse.json();
 
+            if (stats.length > 0) {
+                statistics.value = [];
+            }
             for (let i = 0; i < stats.length; i++) {
                 statistics.value.push({
-                    result: config.results[config.results.indexOf(stats[i].result.toString() === '37' ? '00' : stats[i].result.toString())],
+                    result: gameBoard.value[gameBoard.value.findIndex((x) => x.results === (stats[i].result.toString() === "37" ? "00" : stats[i].result.toString()))].results.toString(),
                     count: stats[i].count,
-                    color: config.colors[config.results.indexOf(stats[i].result.toString() === '37' ? '00' : stats[i].result.toString())],
+                    color: gameBoard.value[gameBoard.value.findIndex((x) => x.results === (stats[i].result.toString() === "37" ? "00" : stats[i].result.toString()))].colors,
                 });
             }
-        });
+            store.commit("addLog", `${new Date().toISOString()} GET .../stats?limit=200`);
+        }
 
         return {
-            rouletteNumbers,
+            gameBoard,
             statistics,
         };
     },

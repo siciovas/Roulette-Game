@@ -28,7 +28,7 @@
                     <th>
                         Hits
                     </th>
-                    <td style="background-color: #d9edf7;" v-for="statistic, index in statistics"
+                    <td style="background-color: #d9edf7;" v-for="statistic, index in statistics" class="hits"
                         :style="{ backgroundColor: index < 5 ? '#d9edf7' : index > neutralColSpan + 4 ? '#f2dede' : 'white' }">
                         {{ statistic.count }}
                     </td>
@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, type PropType } from 'vue';
+import { defineComponent, ref, type PropType, watchEffect } from 'vue';
 import type { StatisticsTypes } from '@/common/types';
 
 export default defineComponent({
@@ -50,6 +50,10 @@ export default defineComponent({
     },
     setup(props) {
         const neutralColSpan = ref(props.statistics?.length as number - 10);
+
+        watchEffect(() => {
+            neutralColSpan.value = props.statistics?.length as number - 10
+        })
 
         return {
             neutralColSpan,
