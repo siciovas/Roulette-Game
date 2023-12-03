@@ -5,15 +5,10 @@
             <div class="logs">
                 <p v-for="historyData in resultsHistory">
                     <span v-if="historyData.outcome">
-                        Game {{ historyData.id }} finished, result:
-                        {{ historyData.outcome }}</span>
+                        Game {{ historyData.id }} finished, result: {{ historyData.outcome }}</span>
                     <span v-else-if="historyData.id">
                         Game {{ historyData.id }}
-                        {{
-                            isSpinning
-                            ? "wheel is spinning"
-                            : `will start in ${countDown} seconds`
-                        }}
+                        {{ isSpinning ? "wheel is spinning" : `will start in ${countDown} seconds` }}
                     </span>
                 </p>
                 <p v-if="!isLoading">Loading the game...</p>
