@@ -1,9 +1,48 @@
+<style scoped>
+.gameboard {
+    height: 40px;
+    width: 100%;
+    border: solid 1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: white;
+    border-radius: 5px;
+}
+
+.gameboard:hover {
+    color: brown;
+}
+
+.selected {
+    background-color: grey !important;
+    transform: scale(1.1);
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+.blink {
+    animation: blink 1.5s infinite;
+}
+</style>
+
 <template>
     <div>
         <h4>Gameboard:</h4>
         <div class="d-flex">
-            <button v-for="board, index in gameBoard" :key="index"
-                :class="['gameboard', board.colors, { 'blink': winnerNumber === board.results, 'selected': selectedButtonNumber === board.results }]"
+            <button v-for="board, index in props.gameBoard" :key="index"
+                :class="['gameboard', board.colors, { 'blink': winnerNumber === board.results.toString(), 'selected': selectedButtonNumber === board.results }]"
                 @click="selectButton(board.results)">
                 {{ board.results }}
             </button>
@@ -11,38 +50,21 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, watchEffect, type PropType, ref } from 'vue'
-import { type GameBoardTypes } from '../common/types'
-import { useStore } from 'vuex'
+<script setup lang="ts">
+import { watchEffect, ref } from 'vue'
+import { useStore } from '@/store';
 
-export default defineComponent({
-    props: {
-        gameBoard: {
-            type: Array as PropType<GameBoardTypes[]>,
-        }
-    },
-    setup() {
-        const store = useStore()
-        const winnerNumber = ref(null)
-        const selectedButtonNumber = ref<number | null>(null)
+const props = defineProps(['gameBoard'])
+const store = useStore()
+const winnerNumber = ref("")
+const selectedButtonNumber = ref<number | null>(null)
 
+watchEffect(() => {
+    winnerNumber.value = store.result;
+    selectedButtonNumber.value = store.selectedNumber;
+})
 
-        watchEffect(() => {
-            winnerNumber.value = store.state.result
-            selectedButtonNumber.value = store.state.selectedNumber
-        })
-
-        const selectButton = (number: number) => {
-            store.commit('selectedNumber', number)
-        }
-
-        return {
-            winnerNumber,
-            selectedButtonNumber,
-            selectButton,
-        }
-    }
-
-});
+const selectButton = (number: number) => {
+    store.setSelectedNumber(number)
+}
 </script>

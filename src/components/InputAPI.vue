@@ -5,30 +5,19 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue'
-import { useStore } from 'vuex'
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useStore } from '@/store';
 
-export default defineComponent({
-    setup() {
-        const store = useStore()
-        const URL = ref("https://dev-games-backend.advbet.com/v1/ab-roulette/1")
+const store = useStore()
+const URL = ref("https://dev-games-backend.advbet.com/v1/ab-roulette/1")
 
-        onMounted(() => {
-            store.commit('setURL', URL.value)
-        })
+store.setURL(URL.value)
 
-        const onChange = (event: Event) => {
-            const value = (event.target as HTMLInputElement)?.value;
-            if (value !== undefined) {
-                store.commit('setURL', value)
-            }
-        }
-
-        return {
-            URL,
-            onChange
-        }
-    },
-})
+const onChange = (event: Event) => {
+    const value = (event.target as HTMLInputElement)?.value;
+    if (value !== undefined) {
+        store.setURL(value)
+    }
+}
 </script>
