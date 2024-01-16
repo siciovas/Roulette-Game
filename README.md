@@ -1,20 +1,5 @@
-# Aardvark Roulette Screen 
+# Roulette Game 
 
-You will need to create an application for a roulette screen that would show upcoming and history roulette spins using Vue js. Unstoppable application workflow is a key when developing this screen as it could be loaded once on the screen and presented for clients who have no interaction with it.
-
-Note: Task implementation should be placed in the git repository.
-
-Evaluation: Your result will be evaluated in the following parts.
-* Repository usage (no unused packages/code should be left behind).
-* File structure.
-* Readability.
-* Code splitting where it makes sense.
-* Good practices.
-* Unstoppable application workflow (temporary internet connection problems should not stop this application).
-* Basic knowledge and use of UI/UX principles (it doesn’t need to be super pretty, but please think about how to present the data to the user in a clear way).
-
-
-The following UI elements should be implemented in the Roulette screen application:
 * API URL input field: There should be a reactive input field for that. (https://dev-games-backend.advbet.com/v1/ab-roulette/{id})
 This backend URL should be used to make all requests to the API.
 * Statistics block: last 200 roulette spins (how many times roulette landed on particular numbers). Information needed can be retrieved using `/{wheelID}/stats` endpoint. These statistics should be used for informational purposes showing the number of occurrences for this particular result.
@@ -50,18 +35,6 @@ Display of last-resulted spins that happened from application start.
 2020-10-15T08:55:11.995Z GET .../game/1552694
 ```
 ...
-
-Extra requirements for Mid-Senior:
-* All above.
-* Use typescript.
-* Place content to different routes(API URL should be seen all the time):
-  - Game Board and Spin history.
-  - Statistics and Actions Log.
-
-Important:
-TLDR: For both routes, data should be updated automatically, without the user even being in that particular route view.
-
-In both of these routes data on the screen should be updated after a new result was retrieved from the backend. E.g.: If you are in ‘Statistics and Actions Log’ statistics should be updated automatically after new roulette spin data is available. If you return to the ‘Game Board and Events’ view, all events that happened while you were in  ‘Statistics and Actions Log’ should still be visible in the Events log. Also please spend a bit of time to think about how this could be achieved without code duplication.
 
 [Backend API documentation](http://petstore.swagger.io/?url=https://dev-games-backend.advbet.com/v1/ab-roulette/static/swagger.yaml)
 
